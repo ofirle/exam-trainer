@@ -10,10 +10,11 @@ import {
   Select,
   Image,
 } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons';
 import type { Question, QuestionOption } from '../lib/types';
 import { reverseText } from '../lib/textUtils';
 import { AVAILABLE_IMAGES } from '../lib/constants';
+import { isQuestionReviewed, toggleQuestionReviewed } from '../lib/reviewStorage';
 
 // Helper to get all images from a question (handles legacy single image)
 const getQuestionImages = (question: Question): string[] => {
@@ -58,6 +59,12 @@ const EditForm: React.FC<EditFormProps> = ({
   );
   const [answer, setAnswer] = useState(question.answer);
   const [selectedImages, setSelectedImages] = useState<string[]>(getQuestionImages(question));
+  const [isReviewed, setIsReviewed] = useState(() => isQuestionReviewed(question.id));
+
+  const handleToggleReviewed = () => {
+    const newStatus = toggleQuestionReviewed(question.id);
+    setIsReviewed(newStatus);
+  };
 
   const handleSave = () => {
     form.validateFields().then((values) => {
@@ -238,7 +245,15 @@ const EditForm: React.FC<EditFormProps> = ({
         Correct answer: {answer}
       </div>
 
-      <div style={{ marginTop: 24, textAlign: 'right' }}>
+      <div style={{ marginTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Button
+          type={isReviewed ? 'primary' : 'default'}
+          icon={isReviewed ? <CheckCircleFilled /> : <CheckCircleOutlined />}
+          onClick={handleToggleReviewed}
+          style={isReviewed ? { backgroundColor: '#52c41a', borderColor: '#52c41a' } : {}}
+        >
+          {isReviewed ? 'Reviewed' : 'Mark as Reviewed'}
+        </Button>
         <Space>
           <Button onClick={onCancel}>Cancel</Button>
           <Button type="primary" onClick={handleSave}>

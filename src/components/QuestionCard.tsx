@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, Radio, Button, Space, Tag, Alert, Typography, Image, Tooltip } from 'antd';
 import {
   CheckCircleOutlined,
+  CheckCircleFilled,
   CloseCircleOutlined,
   TrophyOutlined,
   EyeOutlined,
@@ -26,6 +27,7 @@ import { isMastered } from '../lib/algorithm';
 import { reverseText } from '../lib/textUtils';
 import { useStore } from '../lib/store';
 import { EditQuestionModal } from './EditQuestionModal';
+import { isQuestionReviewed } from '../lib/reviewStorage';
 
 const { Text, Paragraph } = Typography;
 
@@ -116,6 +118,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   };
 
   const mastered = progress ? isMastered(progress) : false;
+  const reviewed = isQuestionReviewed(question.id);
 
   return (
     <>
@@ -127,6 +130,11 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
             {mastered && (
               <Tag icon={<TrophyOutlined />} color="gold">
                 Mastered
+              </Tag>
+            )}
+            {reviewed && (
+              <Tag icon={<CheckCircleFilled />} color="green">
+                Reviewed
               </Tag>
             )}
           </Space>

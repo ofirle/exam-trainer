@@ -1,11 +1,17 @@
 import { useState, useMemo } from 'react';
-import { Typography, Table, Input, Button, Space, Tag } from 'antd';
-import { EditOutlined, DownloadOutlined, UploadOutlined, PictureOutlined } from '@ant-design/icons';
+import { Typography, Table, Input, Button, Space, Tag, Statistic, Row, Col, Card } from 'antd';
+import { EditOutlined, DownloadOutlined, UploadOutlined, PictureOutlined, CheckCircleFilled } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import questionsData from '../data/questions.json';
 import type { Question } from '../lib/types';
 import { EditQuestionModal } from '../components/EditQuestionModal';
 import { reverseText } from '../lib/textUtils';
+import { isQuestionReviewed, getReviewedCount } from '../lib/reviewStorage';
+
+// Helper to check if question has images
+const hasImages = (q: Question): boolean => {
+  return (q.images && q.images.length > 0) || !!q.image;
+};
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -15,6 +21,9 @@ export const QuestionManager: React.FC = () => {
   const [searchText, setSearchText] = useState('');
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0); // Used to force re-render when review status changes
+
+  const reviewedCount = useMemo(() => getReviewedCount(), [refreshKey]);
 
   const filteredQuestions = useMemo(() => {
     if (!searchText) return questions;
@@ -46,11 +55,13 @@ export const QuestionManager: React.FC = () => {
     );
     setIsModalOpen(false);
     setEditingQuestion(null);
+    setRefreshKey((k) => k + 1); // Refresh to update review status
   };
 
   const handleCancel = () => {
     setIsModalOpen(false);
     setEditingQuestion(null);
+    setRefreshKey((k) => k + 1); // Refresh to update review status
   };
 
   const handleExport = () => {
@@ -115,7 +126,7 @@ export const QuestionManager: React.FC = () => {
       key: 'image',
       width: 60,
       render: (_, record) =>
-        record.image ? (
+        hasImages(record) ? (
           <PictureOutlined style={{ color: '#1890ff', fontSize: 16 }} />
         ) : null,
       filters: [
@@ -123,7 +134,22 @@ export const QuestionManager: React.FC = () => {
         { text: 'No Image', value: 'no' },
       ],
       onFilter: (value, record) =>
-        value === 'yes' ? !!record.image : !record.image,
+        value === 'yes' ? hasImages(record) : !hasImages(record),
+    },
+    {
+      title: 'Reviewed',
+      key: 'reviewed',
+      width: 80,
+      render: (_, record) =>
+        isQuestionReviewed(record.id) ? (
+          <CheckCircleFilled style={{ color: '#52c41a', fontSize: 16 }} />
+        ) : null,
+      filters: [
+        { text: 'Reviewed', value: 'yes' },
+        { text: 'Not Reviewed', value: 'no' },
+      ],
+      onFilter: (value, record) =>
+        value === 'yes' ? isQuestionReviewed(record.id) : !isQuestionReviewed(record.id),
     },
     {
       title: 'Answer',
@@ -153,6 +179,38 @@ export const QuestionManager: React.FC = () => {
           Question Manager
         </Title>
       </div>
+
+      <Row gutter={16} style={{ marginBottom: 16 }}>
+        <Col span={8}>
+          <Card size="small">
+            <Statistic
+              title="Review Progress"
+              value={reviewedCount}
+              suffix={`/ ${questions.length}`}
+              valueStyle={{ color: reviewedCount === questions.length ? '#52c41a' : undefined }}
+            />
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card size="small">
+            <Statistic
+              title="Remaining"
+              value={questions.length - reviewedCount}
+              valueStyle={{ color: questions.length - reviewedCount > 0 ? '#faad14' : '#52c41a' }}
+            />
+          </Card>
+        </Col>
+        <Col span={8}>
+          <Card size="small">
+            <Statistic
+              title="Completion"
+              value={Math.round((reviewedCount / questions.length) * 100)}
+              suffix="%"
+              valueStyle={{ color: reviewedCount === questions.length ? '#52c41a' : undefined }}
+            />
+          </Card>
+        </Col>
+      </Row>
 
       <Space style={{ marginBottom: 16 }} wrap>
         <Search
