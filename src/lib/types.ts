@@ -2,6 +2,7 @@
 export interface QuestionOption {
   key: string;
   text: string;
+  image?: string; // optional image for this option
 }
 
 // Question types

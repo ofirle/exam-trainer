@@ -10,7 +10,7 @@ import {
   Select,
   Image,
 } from 'antd';
-import { PlusOutlined, DeleteOutlined, CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, CheckCircleOutlined, CheckCircleFilled, PictureOutlined } from '@ant-design/icons';
 import type { Question, QuestionOption } from '../lib/types';
 import { reverseText } from '../lib/textUtils';
 import { AVAILABLE_IMAGES } from '../lib/constants';
@@ -53,13 +53,14 @@ const EditForm: React.FC<EditFormProps> = ({
   onCancel,
 }) => {
   const [form] = Form.useForm();
-  // Store options with reversed (readable) text for editing
+  // Store options with reversed (readable) text for editing, preserve image
   const [options, setOptions] = useState<QuestionOption[]>(
-    question.options.map((opt) => ({ ...opt, text: reverseText(opt.text) }))
+    question.options.map((opt) => ({ ...opt, text: reverseText(opt.text), image: opt.image }))
   );
   const [answer, setAnswer] = useState(question.answer);
   const [selectedImages, setSelectedImages] = useState<string[]>(getQuestionImages(question));
   const [isReviewed, setIsReviewed] = useState(() => isQuestionReviewed(question.id));
+  const [expandedOptionImage, setExpandedOptionImage] = useState<number | null>(null);
 
   const handleToggleReviewed = () => {
     const newStatus = toggleQuestionReviewed(question.id);
@@ -70,7 +71,11 @@ const EditForm: React.FC<EditFormProps> = ({
     form.validateFields().then((values) => {
       const validOptions = options
         .filter((opt) => opt.text.trim() !== '')
-        .map((opt) => ({ ...opt, text: reverseText(opt.text) })); // Reverse back for storage
+        .map((opt) => ({
+          key: opt.key,
+          text: reverseText(opt.text), // Reverse back for storage
+          ...(opt.image ? { image: opt.image } : {}), // Only include image if set
+        }));
       const updatedQuestion: Question = {
         ...question,
         question: reverseText(values.question), // Reverse back for storage
@@ -89,6 +94,12 @@ const EditForm: React.FC<EditFormProps> = ({
   const handleOptionTextChange = (index: number, text: string) => {
     const newOptions = [...options];
     newOptions[index] = { ...newOptions[index], text };
+    setOptions(newOptions);
+  };
+
+  const handleOptionImageChange = (index: number, image: string | undefined) => {
+    const newOptions = [...options];
+    newOptions[index] = { ...newOptions[index], image };
     setOptions(newOptions);
   };
 
@@ -205,27 +216,77 @@ const EditForm: React.FC<EditFormProps> = ({
                 key={option.key}
                 style={{
                   display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 8,
-                  marginBottom: 8,
+                  flexDirection: 'column',
+                  gap: 4,
+                  marginBottom: 12,
+                  padding: 8,
+                  border: '1px solid #f0f0f0',
+                  borderRadius: 4,
                 }}
               >
-                <Radio value={option.key} style={{ marginTop: 4 }} />
-                <span style={{ minWidth: 24, marginTop: 4 }}>{option.key}.</span>
-                <Input.TextArea
-                  value={option.text}
-                  onChange={(e) => handleOptionTextChange(index, e.target.value)}
-                  placeholder={`Option ${option.key}`}
-                  style={{ flex: 1, direction: 'rtl' }}
-                  autoSize={{ minRows: 1, maxRows: 3 }}
-                />
-                <Button
-                  type="text"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => handleRemoveOption(index)}
-                  disabled={options.length <= 2}
-                />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <Radio value={option.key} style={{ marginTop: 4 }} />
+                  <span style={{ minWidth: 24, marginTop: 4 }}>{option.key}.</span>
+                  <Input.TextArea
+                    value={option.text}
+                    onChange={(e) => handleOptionTextChange(index, e.target.value)}
+                    placeholder={`Option ${option.key}`}
+                    style={{ flex: 1, direction: 'rtl' }}
+                    autoSize={{ minRows: 1, maxRows: 3 }}
+                  />
+                  <Button
+                    type="text"
+                    icon={<PictureOutlined />}
+                    onClick={() => setExpandedOptionImage(expandedOptionImage === index ? null : index)}
+                    style={{ color: option.image ? '#1890ff' : undefined }}
+                  />
+                  <Button
+                    type="text"
+                    danger
+                    icon={<DeleteOutlined />}
+                    onClick={() => handleRemoveOption(index)}
+                    disabled={options.length <= 2}
+                  />
+                </div>
+                {expandedOptionImage === index && (
+                  <div style={{ marginLeft: 48, marginTop: 4 }}>
+                    <Select
+                      placeholder="Select image for this option"
+                      value={option.image}
+                      onChange={(value) => handleOptionImageChange(index, value)}
+                      allowClear
+                      style={{ width: '100%' }}
+                      optionLabelProp="label"
+                    >
+                      {AVAILABLE_IMAGES.map((imagePath) => (
+                        <Select.Option key={imagePath} value={imagePath} label={imagePath.split('/').pop()}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <Image
+                              src={imagePath}
+                              alt={imagePath}
+                              width={40}
+                              height={40}
+                              style={{ objectFit: 'cover' }}
+                              preview={false}
+                            />
+                            <span>{imagePath.split('/').pop()}</span>
+                          </div>
+                        </Select.Option>
+                      ))}
+                    </Select>
+                    {option.image && (
+                      <div style={{ marginTop: 4 }}>
+                        <Image
+                          src={option.image}
+                          alt={option.image}
+                          width={60}
+                          height={60}
+                          style={{ objectFit: 'cover', borderRadius: 4 }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </Space>

@@ -147,19 +147,23 @@
     "options": [
       {
         "key": "א",
-        "text": "66 הנומתב ראותמכ"
+        "text": "66 הנומתב ראותמכ",
+        "image": "/images/66.png"
       },
       {
         "key": "ב",
-        "text": "2 הנומתב ראותמכ"
+        "text": "2 הנומתב ראותמכ",
+        "image": "/images/2.png"
       },
       {
         "key": "ג",
-        "text": "25 הנומתב ראותמכ"
+        "text": "25 הנומתב ראותמכ",
+        "image": "/images/25.png"
       },
       {
         "key": "ד",
-        "text": "22 הנומתב ראותמכ"
+        "text": "22 הנומתב ראותמכ",
+        "image": "/images/22.png"
       }
     ],
     "category": "כללי",
@@ -377,15 +381,18 @@
     "options": [
       {
         "key": "א",
-        "text": "84 הנומתב ראותמכ ןמי ס"
+        "text": "84 הנומתב ראותמכ ןמי ס",
+        "image": "/images/84.png"
       },
       {
         "key": "ב",
-        "text": "81 הנומתב ראותמכ ןמי ס"
+        "text": "81 הנומתב ראותמכ ןמי ס",
+        "image": "/images/81.png"
       },
       {
         "key": "ג",
-        "text": "83 הנומתב ראותמכ ןמיס"
+        "text": "83 הנומתב ראותמכ ןמיס",
+        "image": "/images/83.png"
       },
       {
         "key": "ד",
@@ -397,7 +404,10 @@
     "tags": [],
     "answer": "ב",
     "images": [
-      "/images/39.png"
+      "/images/39.png",
+      "/images/84.png",
+      "/images/81.png",
+      "/images/83.png"
     ]
   },
   {
@@ -478,7 +488,10 @@
     "tags": [
       "בטיחות"
     ],
-    "answer": "ד"
+    "answer": "ד",
+    "images": [
+      "/images/78.png"
+    ]
   },
   {
     "id": 18,
@@ -538,15 +551,18 @@
     "options": [
       {
         "key": "א",
-        "text": "82 הנומתב ראותמכ םוי ןמי ס"
+        "text": "82 הנומתב ראותמכ םוי ןמי ס",
+        "image": "/images/82.png"
       },
       {
         "key": "ב",
-        "text": "86 הנומתב ראותמכ םוי ןמי ס"
+        "text": "86 הנומתב ראותמכ םוי ןמי ס",
+        "image": "/images/86.png"
       },
       {
         "key": "ג",
-        "text": "85 הנומתב ראותמכ םוי ןמיס"
+        "text": "85 הנומתב ראותמכ םוי ןמיס",
+        "image": "/images/85.png"
       },
       {
         "key": "ד",
@@ -558,7 +574,10 @@
     "tags": [],
     "answer": "ד",
     "images": [
-      "/images/53.png"
+      "/images/53.png",
+      "/images/82.png",
+      "/images/86.png",
+      "/images/85.png"
     ]
   },
   {
@@ -1283,7 +1302,10 @@
     "tags": [
       "בטיחות"
     ],
-    "answer": "ג"
+    "answer": "ג",
+    "images": [
+      "/images/84.png"
+    ]
   },
   {
     "id": 48,
@@ -1949,19 +1971,23 @@
     "options": [
       {
         "key": "א",
-        "text": "ששח ילב ודיל רובעל רשפא ,לושכמה דצ תא ןמסמ אוה .26 הנומתב ראותמכ תורו א"
+        "text": "ששח ילב ודיל רובעל רשפא ,לושכמה דצ תא ןמסמ אוה .26 הנומתב ראותמכ תורו א",
+        "image": "/images/26.png"
       },
       {
         "key": "ב",
-        "text": "ותברקב רובעל הנכס ןיאו ןגוע אוה .61 הנומתב ראותמכ תורו א"
+        "text": "ותברקב רובעל הנכס ןיאו ןגוע אוה .61 הנומתב ראותמכ תורו א",
+        "image": "/images/61.png"
       },
       {
         "key": "ג",
-        "text": "ונממ קחרתהל שיו הלילצ רוזא ןמסמ אוה .70 הנומתב ראותמכ תור וא"
+        "text": "ונממ קחרתהל שיו הלילצ רוזא ןמסמ אוה .70 הנומתב ראותמכ תור וא",
+        "image": "/images/70.png"
       },
       {
         "key": "ד",
-        "text": "הרזע עיצהלו תוריהמב וילא ברקתהל שי הטילש אלל אוה .33 הנומתב ראותמכ תורוא"
+        "text": "הרזע עיצהלו תוריהמב וילא ברקתהל שי הטילש אלל אוה .33 הנומתב ראותמכ תורוא",
+        "image": "/images/33.png"
       }
     ],
     "category": "כללי",
@@ -5646,7 +5672,10 @@
     "tags": [
       "אורות"
     ],
-    "answer": "ד"
+    "answer": "ד",
+    "images": [
+      "/images/82.png"
+    ]
   },
   {
     "id": 213,
@@ -5736,7 +5765,10 @@
     "tags": [
       "אורות"
     ],
-    "answer": "א"
+    "answer": "א",
+    "images": [
+      "/images/86.png"
+    ]
   },
   {
     "id": 216,
@@ -6964,7 +6996,10 @@
     "tags": [
       "אורות"
     ],
-    "answer": "ד"
+    "answer": "ד",
+    "images": [
+      "/images/84.png"
+    ]
   },
   {
     "id": 261,
@@ -8283,7 +8318,10 @@
     "category": "כללי",
     "subCategory": null,
     "tags": [],
-    "answer": "ד"
+    "answer": "ד",
+    "images": [
+      "/images/81.png"
+    ]
   },
   {
     "id": 311,
@@ -8338,7 +8376,10 @@
     "category": "כללי",
     "subCategory": null,
     "tags": [],
-    "answer": "ב"
+    "answer": "ב",
+    "images": [
+      "/images/84.png"
+    ]
   },
   {
     "id": 313,
@@ -8350,15 +8391,18 @@
       },
       {
         "key": "ב",
-        "text": "82 הנומתב ראותמכ םוי ןמיס"
+        "text": "82 הנומתב ראותמכ םוי ןמיס",
+        "image": "/images/82.png"
       },
       {
         "key": "ג",
-        "text": "78 הנומתב ראותמכ םוי ןמיס"
+        "text": "78 הנומתב ראותמכ םוי ןמיס",
+        "image": "/images/78.png"
       },
       {
         "key": "ד",
-        "text": "86 הנומתב ראותמכ םוי ןמיס"
+        "text": "86 הנומתב ראותמכ םוי ןמיס",
+        "image": "/images/86.png"
       }
     ],
     "category": "כללי",
@@ -8366,7 +8410,10 @@
     "tags": [],
     "answer": "א",
     "images": [
-      "/images/53.png"
+      "/images/53.png",
+      "/images/82.png",
+      "/images/78.png",
+      "/images/86.png"
     ]
   },
   {
@@ -8375,19 +8422,23 @@
     "options": [
       {
         "key": "א",
-        "text": "79 הנומתב ראותמכ ןמי ס"
+        "text": "79 הנומתב ראותמכ ןמי ס",
+        "image": "/images/79.png"
       },
       {
         "key": "ב",
-        "text": "80 הנומתב ראותמכ ןמי ס"
+        "text": "80 הנומתב ראותמכ ןמי ס",
+        "image": "/images/80.png"
       },
       {
         "key": "ג",
-        "text": "83 הנומתב ראותמכ ןמיס"
+        "text": "83 הנומתב ראותמכ ןמיס",
+        "image": "/images/83.png"
       },
       {
         "key": "ד",
-        "text": "81 הנומתב ראותמכ ןמיס"
+        "text": "81 הנומתב ראותמכ ןמיס",
+        "image": "/images/81.png"
       }
     ],
     "category": "כללי",
@@ -8395,7 +8446,11 @@
     "tags": [],
     "answer": "ד",
     "images": [
-      "/images/39.png"
+      "/images/39.png",
+      "/images/79.png",
+      "/images/80.png",
+      "/images/83.png",
+      "/images/81.png"
     ]
   },
   {
@@ -8560,7 +8615,10 @@
     "tags": [
       "אורות"
     ],
-    "answer": "ד"
+    "answer": "ד",
+    "images": [
+      "/images/80.png"
+    ]
   },
   {
     "id": 321,
@@ -8618,7 +8676,10 @@
     "tags": [
       "אורות"
     ],
-    "answer": "ד"
+    "answer": "ד",
+    "images": [
+      "/images/84.png"
+    ]
   },
   {
     "id": 323,
@@ -8680,7 +8741,8 @@
     "options": [
       {
         "key": "א",
-        "text": "83 הנומתב ראותמכ"
+        "text": "83 הנומתב ראותמכ",
+        "image": "/images/83.png"
       },
       {
         "key": "ב",
@@ -8688,11 +8750,13 @@
       },
       {
         "key": "ג",
-        "text": "88 הנומתב ראותמכ"
+        "text": "88 הנומתב ראותמכ",
+        "image": "/images/88.png"
       },
       {
         "key": "ד",
-        "text": "84 הנומתב ראותמכ"
+        "text": "84 הנומתב ראותמכ",
+        "image": "/images/84.png"
       }
     ],
     "category": "כללי",
@@ -8700,7 +8764,10 @@
     "tags": [],
     "answer": "ד",
     "images": [
-      "/images/55.png"
+      "/images/55.png",
+      "/images/83.png",
+      "/images/88.png",
+      "/images/84.png"
     ]
   },
   {
@@ -8814,7 +8881,12 @@
       "אורות",
       "בטיחות"
     ],
-    "answer": "ג"
+    "answer": "ג",
+    "images": [
+      "/images/84.png",
+      "/images/85.png",
+      "/images/82.png"
+    ]
   },
   {
     "id": 330,
@@ -8873,7 +8945,11 @@
     "tags": [
       "אורות"
     ],
-    "answer": "א"
+    "answer": "א",
+    "images": [
+      "/images/81.png",
+      "/images/84.png"
+    ]
   },
   {
     "id": 332,
@@ -8995,7 +9071,10 @@
     "tags": [
       "אורות"
     ],
-    "answer": "ג"
+    "answer": "ג",
+    "images": [
+      "/images/82.png"
+    ]
   },
   {
     "id": 336,
@@ -9021,7 +9100,10 @@
     "category": "כללי",
     "subCategory": null,
     "tags": [],
-    "answer": "ב"
+    "answer": "ב",
+    "images": [
+      "/images/86.png"
+    ]
   },
   {
     "id": 337,
@@ -9047,7 +9129,10 @@
     "category": "כללי",
     "subCategory": null,
     "tags": [],
-    "answer": "ב"
+    "answer": "ב",
+    "images": [
+      "/images/82.png"
+    ]
   },
   {
     "id": 338,
@@ -9128,7 +9213,10 @@
     "category": "כללי",
     "subCategory": null,
     "tags": [],
-    "answer": "ב"
+    "answer": "ב",
+    "images": [
+      "/images/86.png"
+    ]
   },
   {
     "id": 341,
@@ -9165,15 +9253,18 @@
     "options": [
       {
         "key": "א",
-        "text": "84 הנומתב ראות מכ"
+        "text": "84 הנומתב ראות מכ",
+        "image": "/images/84.png"
       },
       {
         "key": "ב",
-        "text": "75 הנומתב ראות מכ"
+        "text": "75 הנומתב ראות מכ",
+        "image": "/images/75.png"
       },
       {
         "key": "ג",
-        "text": "83 הנומתב ראותמכ"
+        "text": "83 הנומתב ראותמכ",
+        "image": "/images/83.png"
       },
       {
         "key": "ד",
@@ -9185,7 +9276,10 @@
     "tags": [],
     "answer": "ב",
     "images": [
-      "/images/38.png"
+      "/images/38.png",
+      "/images/84.png",
+      "/images/75.png",
+      "/images/83.png"
     ]
   },
   {
@@ -9252,19 +9346,23 @@
     "options": [
       {
         "key": "א",
-        "text": "27 הנומתב ראותמ כ"
+        "text": "27 הנומתב ראותמ כ",
+        "image": "/images/27.png"
       },
       {
         "key": "ב",
-        "text": "48 הנומתב ראותמ כ"
+        "text": "48 הנומתב ראותמ כ",
+        "image": "/images/48.png"
       },
       {
         "key": "ג",
-        "text": "13 הנומתב ראותמכ"
+        "text": "13 הנומתב ראותמכ",
+        "image": "/images/13.png"
       },
       {
         "key": "ד",
-        "text": "62 הנומתב ראותמכ"
+        "text": "62 הנומתב ראותמכ",
+        "image": "/images/62.png"
       }
     ],
     "category": "כללי",

@@ -200,20 +200,33 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           <Space direction="vertical" style={{ width: '100%' }}>
             {question.options.map((option, index) => (
               <div key={option.key} style={getOptionStyle(index)}>
-                <Radio value={index}>
-                  <Text
-                    strong={submitted && index === correctIndex}
-                    delete={submitted && index === selectedIndex && !isCorrect}
-                    style={{ direction: 'rtl' }}
-                  >
-                    {option.key}. {reverseText(option.text)}
-                  </Text>
-                  {submitted && index === correctIndex && (
-                    <CheckCircleOutlined style={{ color: '#52c41a', marginLeft: 8 }} />
-                  )}
-                  {submitted && index === selectedIndex && !isCorrect && (
-                    <CloseCircleOutlined style={{ color: '#ff4d4f', marginLeft: 8 }} />
-                  )}
+                <Radio value={index} style={{ alignItems: 'flex-start', width: '100%' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div>
+                      <Text
+                        strong={submitted && index === correctIndex}
+                        delete={submitted && index === selectedIndex && !isCorrect}
+                        style={{ direction: 'rtl' }}
+                      >
+                        {option.key}. {reverseText(option.text)}
+                      </Text>
+                      {submitted && index === correctIndex && (
+                        <CheckCircleOutlined style={{ color: '#52c41a', marginLeft: 8 }} />
+                      )}
+                      {submitted && index === selectedIndex && !isCorrect && (
+                        <CloseCircleOutlined style={{ color: '#ff4d4f', marginLeft: 8 }} />
+                      )}
+                    </div>
+                    {option.image && (
+                      <div style={{ marginTop: 4, marginLeft: 20 }}>
+                        <Image
+                          src={option.image}
+                          alt={`Option ${option.key}`}
+                          style={{ maxWidth: 200, maxHeight: 150, borderRadius: 4 }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </Radio>
               </div>
             ))}
