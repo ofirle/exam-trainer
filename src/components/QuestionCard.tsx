@@ -1,0 +1,246 @@
+import { useState, useEffect } from 'react';
+import { Card, Radio, Button, Space, Tag, Alert, Typography, Image, Tooltip } from 'antd';
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  TrophyOutlined,
+  EyeOutlined,
+  WarningOutlined,
+  ForwardOutlined,
+  EditOutlined,
+} from '@ant-design/icons';
+import type { Question, QuestionProgress } from '../lib/types';
+import { CONFIG } from '../lib/constants';
+import { isMastered } from '../lib/algorithm';
+import { reverseText } from '../lib/textUtils';
+import { useStore } from '../lib/store';
+import { EditQuestionModal } from './EditQuestionModal';
+
+const { Text, Paragraph } = Typography;
+
+interface QuestionCardProps {
+  question: Question;
+  progress?: QuestionProgress;
+  onSubmit: (selectedIndex: number, isCorrect: boolean, selectedOptionKey: string, correctOptionKey: string) => void;
+  onNext?: () => void;
+  onSkip?: () => void;
+  showStats?: boolean;
+  showFeedback?: boolean;
+  mode?: 'training' | 'exam';
+}
+
+export const QuestionCard: React.FC<QuestionCardProps> = ({
+  question,
+  progress,
+  onSubmit,
+  onNext,
+  onSkip,
+  showStats = true,
+  showFeedback = true,
+  mode = 'training',
+}) => {
+  const { categories, updateQuestion } = useStore();
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Find the correct answer index
+  const correctIndex = question.options.findIndex((opt) => opt.key === question.answer);
+
+  // Reset state when question changes
+  useEffect(() => {
+    setSelectedIndex(null);
+    setSubmitted(false);
+    setIsCorrect(false);
+  }, [question.id]);
+
+  const handleSubmit = () => {
+    if (selectedIndex === null) return;
+
+    const correct = selectedIndex === correctIndex;
+    const selectedOptionKey = question.options[selectedIndex]?.key || '';
+    const correctOptionKey = question.answer;
+    setIsCorrect(correct);
+    setSubmitted(true);
+    onSubmit(selectedIndex, correct, selectedOptionKey, correctOptionKey);
+  };
+
+  const handleNext = () => {
+    onNext?.();
+  };
+
+  const handleEditSave = (updatedQuestion: Question) => {
+    updateQuestion(updatedQuestion);
+    setIsEditModalOpen(false);
+  };
+
+  const getOptionStyle = (index: number): React.CSSProperties => {
+    if (!submitted) return {};
+
+    if (index === correctIndex) {
+      return {
+        backgroundColor: '#f6ffed',
+        borderColor: '#b7eb8f',
+        borderRadius: 4,
+        padding: '8px 12px',
+        margin: '4px 0',
+      };
+    }
+
+    if (index === selectedIndex && !isCorrect) {
+      return {
+        backgroundColor: '#fff2f0',
+        borderColor: '#ffccc7',
+        borderRadius: 4,
+        padding: '8px 12px',
+        margin: '4px 0',
+      };
+    }
+
+    return {
+      padding: '8px 12px',
+      margin: '4px 0',
+    };
+  };
+
+  const mastered = progress ? isMastered(progress) : false;
+
+  return (
+    <>
+      <Card
+        title={
+          <Space>
+            <span>Question #{question.id}</span>
+            {question.category && <Tag color="blue">{question.category}</Tag>}
+            {mastered && (
+              <Tag icon={<TrophyOutlined />} color="gold">
+                Mastered
+              </Tag>
+            )}
+          </Space>
+        }
+        extra={
+          <Space size="small">
+            <Tooltip title="Edit question">
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEditModalOpen(true);
+                }}
+              />
+            </Tooltip>
+            {showStats && progress && progress.seenCount > 0 && (
+              <>
+                <Tag icon={<EyeOutlined />}>Seen: {progress.seenCount}</Tag>
+                <Tag
+                  icon={<CheckCircleOutlined />}
+                  color={progress.correctStreak >= CONFIG.MASTER_STREAK ? 'green' : 'default'}
+                >
+                  Streak: {progress.correctStreak}
+                </Tag>
+                {progress.wrongCount > 0 && (
+                  <Tag icon={<WarningOutlined />} color="orange">
+                    Wrong: {progress.wrongCount}
+                  </Tag>
+                )}
+              </>
+            )}
+          </Space>
+        }
+      >
+        <Paragraph style={{ fontSize: 16, marginBottom: 24, direction: 'rtl' }}>
+          {reverseText(question.question)}
+        </Paragraph>
+
+        {question.image && (
+          <div style={{ marginBottom: 24, textAlign: 'center' }}>
+            <Image
+              src={question.image}
+              alt={`Question ${question.id} image`}
+              style={{ maxWidth: '100%', maxHeight: 400 }}
+            />
+          </div>
+        )}
+
+        <Radio.Group
+          value={selectedIndex}
+          onChange={(e) => !submitted && setSelectedIndex(e.target.value)}
+          style={{ width: '100%' }}
+          disabled={submitted}
+        >
+          <Space direction="vertical" style={{ width: '100%' }}>
+            {question.options.map((option, index) => (
+              <div key={option.key} style={getOptionStyle(index)}>
+                <Radio value={index}>
+                  <Text
+                    strong={submitted && index === correctIndex}
+                    delete={submitted && index === selectedIndex && !isCorrect}
+                    style={{ direction: 'rtl' }}
+                  >
+                    {option.key}. {reverseText(option.text)}
+                  </Text>
+                  {submitted && index === correctIndex && (
+                    <CheckCircleOutlined style={{ color: '#52c41a', marginLeft: 8 }} />
+                  )}
+                  {submitted && index === selectedIndex && !isCorrect && (
+                    <CloseCircleOutlined style={{ color: '#ff4d4f', marginLeft: 8 }} />
+                  )}
+                </Radio>
+              </div>
+            ))}
+          </Space>
+        </Radio.Group>
+
+        {showFeedback && submitted && (
+          <Alert
+            message={isCorrect ? 'Correct!' : 'Incorrect'}
+            type={isCorrect ? 'success' : 'error'}
+            showIcon
+            style={{ marginTop: 16 }}
+          />
+        )}
+
+        <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+          {!submitted ? (
+            <>
+              {onSkip && (
+                <Button
+                  onClick={onSkip}
+                  size="large"
+                  icon={<ForwardOutlined />}
+                >
+                  Skip
+                </Button>
+              )}
+              <Button
+                type="primary"
+                onClick={handleSubmit}
+                disabled={selectedIndex === null}
+                size="large"
+              >
+                Submit Answer
+              </Button>
+            </>
+          ) : (
+            mode === 'training' && onNext && (
+              <Button type="primary" onClick={handleNext} size="large">
+                Next Question
+              </Button>
+            )
+          )}
+        </div>
+      </Card>
+
+      <EditQuestionModal
+        question={question}
+        open={isEditModalOpen}
+        categories={categories}
+        onSave={handleEditSave}
+        onCancel={() => setIsEditModalOpen(false)}
+      />
+    </>
+  );
+};
