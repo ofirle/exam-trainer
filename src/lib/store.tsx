@@ -20,9 +20,7 @@ import {
   consumeFocusQueueInDb,
   setFocusQueueInDb,
 } from './database';
-import questionsData from '../data/questions.json';
-
-const initialQuestions: Question[] = questionsData as Question[];
+import { useQuestions } from './questionsStore';
 
 interface StoreContextType {
   state: AppState;
@@ -52,8 +50,8 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | null>(null);
 
 export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { questions, isLoading: questionsLoading, updateQuestionInStore } = useQuestions();
   const [state, setState] = useState<AppState>(() => loadState());
-  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [currentQuestionId, setCurrentQuestionId] = useState<number | null>(null);
   const [activeExam, setActiveExam] = useState<ExamSession | null>(null);
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured());
@@ -103,7 +101,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       setState((prev) => consumeFocusQueue(prev));
       consumeFocusQueueInDb();
     }
-  }, [state]);
+  }, [questions, state]);
 
   const submitAnswer = useCallback(
     (questionId: number, _selectedIndex: number, isCorrect: boolean, selectedOptionKey: string, correctOptionKey: string) => {
@@ -144,7 +142,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         createExamSessionInDb(session.id, mode, session.questionIds);
       }
     },
-    [state]
+    [questions, state]
   );
 
   const submitExamAnswer = useCallback(
@@ -287,16 +285,14 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   }, [questions]);
 
   const updateQuestion = useCallback((updatedQuestion: Question) => {
-    setQuestions((prev) =>
-      prev.map((q) => (q.id === updatedQuestion.id ? updatedQuestion : q))
-    );
-  }, []);
+    updateQuestionInStore(updatedQuestion);
+  }, [updateQuestionInStore]);
 
   const value: StoreContextType = {
     state,
     questions,
     categories,
-    isLoading,
+    isLoading: isLoading || questionsLoading,
     isSynced,
     currentQuestionId,
     loadNextQuestion,

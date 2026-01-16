@@ -1,6 +1,130 @@
 import { supabase, isSupabaseConfigured, getDeviceId } from './supabase';
-import type { AppState, QuestionProgress, ExamMode } from './types';
+import type { AppState, QuestionProgress, ExamMode, Question, QuestionOption } from './types';
 import { CONFIG } from './constants';
+
+// ============================================================================
+// Questions Operations
+// ============================================================================
+
+export const fetchAllQuestions = async (): Promise<Question[]> => {
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .order('id', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching questions:', error);
+    return [];
+  }
+
+  return (data || []).map((row) => ({
+    id: row.id,
+    question: row.question,
+    options: row.options as QuestionOption[],
+    answer: row.answer,
+    category: row.category || '',
+    subCategory: row.sub_category,
+    tags: row.tags || [],
+    image: row.image || undefined,
+    images: row.images || undefined,
+  }));
+};
+
+export const fetchQuestion = async (questionId: number): Promise<Question | null> => {
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('id', questionId)
+    .single();
+
+  if (error) {
+    console.error('Error fetching question:', error);
+    return null;
+  }
+
+  return data ? {
+    id: data.id,
+    question: data.question,
+    options: data.options as QuestionOption[],
+    answer: data.answer,
+    category: data.category || '',
+    subCategory: data.sub_category,
+    tags: data.tags || [],
+    image: data.image || undefined,
+    images: data.images || undefined,
+  } : null;
+};
+
+export const updateQuestion = async (question: Question): Promise<boolean> => {
+  if (!supabase) return false;
+
+  const { error } = await supabase
+    .from('questions')
+    .update({
+      question: question.question,
+      options: question.options,
+      answer: question.answer,
+      category: question.category,
+      sub_category: question.subCategory,
+      tags: question.tags,
+      image: question.image || null,
+      images: question.images || null,
+    })
+    .eq('id', question.id);
+
+  if (error) {
+    console.error('Error updating question:', error);
+    return false;
+  }
+
+  return true;
+};
+
+export const upsertQuestions = async (questions: Question[]): Promise<boolean> => {
+  if (!supabase) return false;
+
+  const rows = questions.map((q) => ({
+    id: q.id,
+    question: q.question,
+    options: q.options,
+    answer: q.answer,
+    category: q.category,
+    sub_category: q.subCategory,
+    tags: q.tags,
+    image: q.image || null,
+    images: q.images || null,
+  }));
+
+  const { error } = await supabase
+    .from('questions')
+    .upsert(rows, { onConflict: 'id' });
+
+  if (error) {
+    console.error('Error upserting questions:', error);
+    return false;
+  }
+
+  return true;
+};
+
+export const getQuestionsCount = async (): Promise<number> => {
+  if (!supabase) return 0;
+
+  const { count, error } = await supabase
+    .from('questions')
+    .select('*', { count: 'exact', head: true });
+
+  if (error) {
+    console.error('Error counting questions:', error);
+    return 0;
+  }
+
+  return count || 0;
+};
 
 // ============================================================================
 // User State Operations

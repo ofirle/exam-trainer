@@ -8,6 +8,7 @@ import {
   SettingOutlined,
 } from '@ant-design/icons';
 import { StoreProvider } from './lib/store';
+import { QuestionsProvider } from './lib/questionsStore';
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -43,8 +44,9 @@ export const AppLayout: React.FC = () => {
   ];
 
   return (
-    <StoreProvider>
-      <Layout style={{ minHeight: '100vh' }}>
+    <QuestionsProvider>
+      <StoreProvider>
+        <Layout style={{ minHeight: '100vh' }}>
         <Header
           style={{
             display: 'flex',
@@ -86,6 +88,7 @@ export const AppLayout: React.FC = () => {
           Exam Trainer - Practice makes perfect
         </Footer>
       </Layout>
-    </StoreProvider>
+      </StoreProvider>
+    </QuestionsProvider>
   );
 };

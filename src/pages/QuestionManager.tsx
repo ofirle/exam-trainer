@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Typography, Table, Input, Button, Space, Tag, Statistic, Row, Col, Card } from 'antd';
-import { EditOutlined, DownloadOutlined, UploadOutlined, PictureOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { Typography, Table, Input, Button, Space, Tag, Statistic, Row, Col, Card, Spin, message } from 'antd';
+import { EditOutlined, DownloadOutlined, UploadOutlined, PictureOutlined, CheckCircleFilled, SyncOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import questionsData from '../data/questions.json';
 import type { Question } from '../lib/types';
 import { EditQuestionModal } from '../components/EditQuestionModal';
 import { reverseText } from '../lib/textUtils';
 import { isQuestionReviewed, getReviewedCount } from '../lib/reviewStorage';
+import { useQuestions } from '../lib/questionsStore';
+import { upsertQuestions } from '../lib/database';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 // Helper to check if question has images
 const hasImages = (q: Question): boolean => {
@@ -17,11 +19,12 @@ const { Title } = Typography;
 const { Search } = Input;
 
 export const QuestionManager: React.FC = () => {
-  const [questions, setQuestions] = useState<Question[]>(questionsData as Question[]);
+  const { questions, isLoading, isSeeding, updateQuestionInStore, seedDatabase } = useQuestions();
   const [searchText, setSearchText] = useState('');
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0); // Used to force re-render when review status changes
+  const [isImporting, setIsImporting] = useState(false);
 
   const reviewedCount = useMemo(() => getReviewedCount(), [refreshKey]);
 
@@ -49,13 +52,12 @@ export const QuestionManager: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = (updatedQuestion: Question) => {
-    setQuestions((prev) =>
-      prev.map((q) => (q.id === updatedQuestion.id ? updatedQuestion : q))
-    );
+  const handleSave = async (updatedQuestion: Question) => {
+    await updateQuestionInStore(updatedQuestion);
     setIsModalOpen(false);
     setEditingQuestion(null);
     setRefreshKey((k) => k + 1); // Refresh to update review status
+    message.success('Question saved successfully');
   };
 
   const handleCancel = () => {
@@ -85,11 +87,26 @@ export const QuestionManager: React.FC = () => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
       try {
+        setIsImporting(true);
         const text = await file.text();
         const imported = JSON.parse(text) as Question[];
-        setQuestions(imported);
+
+        // Sync to database if configured
+        if (isSupabaseConfigured()) {
+          const success = await upsertQuestions(imported);
+          if (success) {
+            message.success(`Imported ${imported.length} questions to database`);
+            // Reload from database
+            await seedDatabase();
+          } else {
+            message.error('Failed to import questions to database');
+          }
+        }
       } catch (err) {
         console.error('Failed to import questions:', err);
+        message.error('Failed to import questions');
+      } finally {
+        setIsImporting(false);
       }
     };
     input.click();
@@ -171,12 +188,23 @@ export const QuestionManager: React.FC = () => {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <Spin size="large" tip="Loading questions..." />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
         <Title level={2}>
           <EditOutlined style={{ marginRight: 8 }} />
           Question Manager
+          {(isSeeding || isImporting) && (
+            <SyncOutlined spin style={{ marginLeft: 12, fontSize: 18 }} />
+          )}
         </Title>
       </div>
 

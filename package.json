@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "generate-images": "node scripts/generateImageList.js",
+    "dev": "npm run generate-images && vite",
+    "build": "npm run generate-images && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
