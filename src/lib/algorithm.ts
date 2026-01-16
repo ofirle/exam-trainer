@@ -13,6 +13,8 @@ export const getQuestionProgress = (
       correctStreak: 0,
       dueAfter: 0,
       lastSeenAtCounter: 0,
+      dontKnowCount: 0,
+      skipCount: 0,
     }
   );
 };
@@ -59,6 +61,36 @@ export const updateStateOnAnswer = (
     updatedProgress.correctStreak = 0;
     updatedProgress.dueAfter = newState.globalCounter + CONFIG.WRONG_INTERVAL;
   }
+
+  newState.progressById = {
+    ...state.progressById,
+    [questionId]: updatedProgress,
+  };
+
+  // Update recentIds
+  const newRecentIds = [...state.recentIds, questionId].slice(-CONFIG.RECENT_BLOCK_SIZE);
+  newState.recentIds = newRecentIds;
+
+  return newState;
+};
+
+// Update state when user clicks "I Don't Know"
+export const updateStateOnDontKnow = (
+  state: AppState,
+  questionId: number
+): AppState => {
+  const newState = { ...state };
+  newState.globalCounter += 1;
+
+  const progress = getQuestionProgress(state, questionId);
+  const updatedProgress: QuestionProgress = {
+    ...progress,
+    seenCount: progress.seenCount + 1,
+    lastSeenAtCounter: newState.globalCounter,
+    dontKnowCount: progress.dontKnowCount + 1,
+    correctStreak: 0, // Reset streak
+    dueAfter: newState.globalCounter + CONFIG.WRONG_INTERVAL, // Treat as wrong for scheduling
+  };
 
   newState.progressById = {
     ...state.progressById,

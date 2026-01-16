@@ -3,6 +3,7 @@ import type { AppState, Question, ExamSession, ExamMode } from './types';
 import { loadState, saveState, resetStateSync, loadStateAsync } from './storage';
 import {
   updateStateOnAnswer,
+  updateStateOnDontKnow,
   pickNextQuestionId,
   createExamSession,
   getQuestionProgress,
@@ -32,6 +33,7 @@ interface StoreContextType {
   currentQuestionId: number | null;
   loadNextQuestion: () => void;
   submitAnswer: (questionId: number, selectedIndex: number, isCorrect: boolean, selectedOptionKey: string, correctOptionKey: string) => void;
+  submitDontKnow: (questionId: number) => void;
   // Exam
   activeExam: ExamSession | null;
   startExam: (mode: ExamMode) => void;
@@ -119,6 +121,26 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
         upsertQuestionProgress(questionId, updatedProgress);
         recordAnswer(questionId, selectedOptionKey, correctOptionKey, isCorrect, 'training');
+        addRecentQuestion(questionId);
+      }
+    },
+    [state]
+  );
+
+  const submitDontKnow = useCallback(
+    (questionId: number) => {
+      setState((prev) => updateStateOnDontKnow(prev, questionId));
+
+      // Record to database async
+      if (isSupabaseConfigured()) {
+        const progress = getQuestionProgress(state, questionId);
+        const updatedProgress = {
+          ...progress,
+          seenCount: progress.seenCount + 1,
+          dontKnowCount: progress.dontKnowCount + 1,
+          correctStreak: 0,
+        };
+        upsertQuestionProgress(questionId, updatedProgress);
         addRecentQuestion(questionId);
       }
     },
@@ -297,6 +319,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     currentQuestionId,
     loadNextQuestion,
     submitAnswer,
+    submitDontKnow,
     activeExam,
     startExam,
     submitExamAnswer,

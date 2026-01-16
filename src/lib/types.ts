@@ -25,6 +25,8 @@ export interface QuestionProgress {
   correctStreak: number;
   dueAfter: number; // eligible when dueAfter <= globalCounter
   lastSeenAtCounter: number;
+  dontKnowCount: number; // times marked "I don't know"
+  skipCount: number; // times skipped
 }
 
 // Exam session types

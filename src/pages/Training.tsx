@@ -18,6 +18,7 @@ const TrainingContent: React.FC = () => {
     currentQuestionId,
     loadNextQuestion,
     submitAnswer,
+    submitDontKnow,
     getQuestionById,
     clearFocusQueue,
   } = useStore();
@@ -46,6 +47,12 @@ const TrainingContent: React.FC = () => {
 
   const handleSkip = () => {
     loadNextQuestion();
+  };
+
+  const handleDontKnow = () => {
+    if (currentQuestionId) {
+      submitDontKnow(currentQuestionId);
+    }
   };
 
   const handleClearFocusQueue = () => {
@@ -136,6 +143,7 @@ const TrainingContent: React.FC = () => {
         onSubmit={handleSubmit}
         onNext={handleNext}
         onSkip={handleSkip}
+        onDontKnow={handleDontKnow}
         showStats={true}
         showFeedback={true}
         mode="training"

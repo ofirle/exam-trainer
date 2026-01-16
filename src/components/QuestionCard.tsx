@@ -9,6 +9,7 @@ import {
   WarningOutlined,
   ForwardOutlined,
   EditOutlined,
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 import type { Question, QuestionProgress } from '../lib/types';
 
@@ -37,6 +38,7 @@ interface QuestionCardProps {
   onSubmit: (selectedIndex: number, isCorrect: boolean, selectedOptionKey: string, correctOptionKey: string) => void;
   onNext?: () => void;
   onSkip?: () => void;
+  onDontKnow?: () => void;
   showStats?: boolean;
   showFeedback?: boolean;
   mode?: 'training' | 'exam';
@@ -48,6 +50,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   onSubmit,
   onNext,
   onSkip,
+  onDontKnow,
   showStats = true,
   showFeedback = true,
   mode = 'training',
@@ -56,6 +59,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [isDontKnow, setIsDontKnow] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Find the correct answer index
@@ -66,6 +70,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     setSelectedIndex(null);
     setSubmitted(false);
     setIsCorrect(false);
+    setIsDontKnow(false);
   }, [question.id]);
 
   const handleSubmit = () => {
@@ -77,6 +82,13 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
     setIsCorrect(correct);
     setSubmitted(true);
     onSubmit(selectedIndex, correct, selectedOptionKey, correctOptionKey);
+  };
+
+  const handleDontKnow = () => {
+    setIsDontKnow(true);
+    setSubmitted(true);
+    setIsCorrect(false);
+    onDontKnow?.();
   };
 
   const handleNext = () => {
@@ -235,8 +247,8 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
         {showFeedback && submitted && (
           <Alert
-            message={isCorrect ? 'Correct!' : 'Incorrect'}
-            type={isCorrect ? 'success' : 'error'}
+            message={isDontKnow ? "Marked as 'I Don't Know'" : (isCorrect ? 'Correct!' : 'Incorrect')}
+            type={isCorrect ? 'success' : (isDontKnow ? 'warning' : 'error')}
             showIcon
             style={{ marginTop: 16 }}
           />
@@ -252,6 +264,15 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                   icon={<ForwardOutlined />}
                 >
                   Skip
+                </Button>
+              )}
+              {onDontKnow && mode === 'training' && (
+                <Button
+                  onClick={handleDontKnow}
+                  size="large"
+                  icon={<QuestionCircleOutlined />}
+                >
+                  I Don't Know
                 </Button>
               )}
               <Button

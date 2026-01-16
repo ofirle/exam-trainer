@@ -190,6 +190,8 @@ export const fetchAllQuestionProgress = async (): Promise<Record<number, Questio
       correctStreak: row.correct_streak,
       dueAfter: row.due_after,
       lastSeenAtCounter: row.last_seen_at_counter,
+      dontKnowCount: row.dont_know_count || 0,
+      skipCount: row.skip_count || 0,
     };
   }
 
@@ -214,6 +216,8 @@ export const upsertQuestionProgress = async (
         correct_streak: progress.correctStreak,
         due_after: progress.dueAfter,
         last_seen_at_counter: progress.lastSeenAtCounter,
+        dont_know_count: progress.dontKnowCount || 0,
+        skip_count: progress.skipCount || 0,
       },
       { onConflict: 'device_id,question_id' }
     );

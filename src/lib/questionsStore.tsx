@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { Question } from './types';
-import { fetchAllQuestions, upsertQuestions, updateQuestion, getQuestionsCount } from './database';
+import { fetchAllQuestions, upsertQuestions, updateQuestion } from './database';
 import { isSupabaseConfigured } from './supabase';
 import questionsJson from '../data/questions.json';
 
@@ -53,7 +53,7 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
     }
   }, []);
 
-  // Load questions from database on mount
+  // Load questions from database on mount (no auto-seeding)
   useEffect(() => {
     const loadQuestions = async () => {
       if (!isSupabaseConfigured()) {
@@ -62,20 +62,14 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
       }
 
       try {
-        // Check if database has questions
-        const count = await getQuestionsCount();
-
-        if (count === 0) {
-          // Database is empty, seed it
-          console.log('Database empty, seeding with questions from JSON...');
-          await seedDatabase();
+        // Load from database if questions exist
+        const dbQuestions = await fetchAllQuestions();
+        if (dbQuestions.length > 0) {
+          setQuestions(dbQuestions);
+          console.log(`Loaded ${dbQuestions.length} questions from database`);
         } else {
-          // Load from database
-          const dbQuestions = await fetchAllQuestions();
-          if (dbQuestions.length > 0) {
-            setQuestions(dbQuestions);
-            console.log(`Loaded ${dbQuestions.length} questions from database`);
-          }
+          // Database is empty - use local JSON and log message
+          console.log('Database empty, using local JSON questions. Use Import to load questions.');
         }
       } catch (error) {
         console.error('Error loading questions:', error);
@@ -86,7 +80,7 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
     };
 
     loadQuestions();
-  }, [seedDatabase]);
+  }, []);
 
   // Update a single question
   const updateQuestionInStore = useCallback(async (question: Question) => {
