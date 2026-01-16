@@ -13,7 +13,8 @@ export interface Question {
   subCategory: string | null;
   tags: string[];
   answer: string; // key of the correct option (e.g., "א", "ב")
-  image?: string; // optional image file path
+  image?: string; // optional single image (legacy support)
+  images?: string[]; // optional multiple images
 }
 
 // Progress tracking for each question

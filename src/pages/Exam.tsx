@@ -27,9 +27,20 @@ import {
 } from '@ant-design/icons';
 import { QuestionCard } from '../components/QuestionCard';
 import { useStore } from '../lib/store';
-import type { ExamMode } from '../lib/types';
+import type { ExamMode, Question } from '../lib/types';
 import { CONFIG } from '../lib/constants';
 import { reverseText } from '../lib/textUtils';
+
+// Helper to get all images from a question (handles legacy single image)
+const getQuestionImages = (question: Question): string[] => {
+  if (question.images && question.images.length > 0) {
+    return question.images;
+  }
+  if (question.image) {
+    return [question.image];
+  }
+  return [];
+};
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -311,13 +322,20 @@ const ExamSummary: React.FC = () => {
                     }
                     description={<span style={{ direction: 'rtl', display: 'block' }}>{reverseText(question.question)}</span>}
                   />
-                  {question.image && (
+                  {getQuestionImages(question).length > 0 && (
                     <div style={{ margin: '12px 0', textAlign: 'center' }}>
-                      <Image
-                        src={question.image}
-                        alt={`Question ${question.id} image`}
-                        style={{ maxWidth: '100%', maxHeight: 200 }}
-                      />
+                      <Image.PreviewGroup>
+                        <Space wrap style={{ justifyContent: 'center' }}>
+                          {getQuestionImages(question).map((img, idx) => (
+                            <Image
+                              key={idx}
+                              src={img}
+                              alt={`Question ${question.id} image ${idx + 1}`}
+                              style={{ maxWidth: '100%', maxHeight: 200 }}
+                            />
+                          ))}
+                        </Space>
+                      </Image.PreviewGroup>
                     </div>
                   )}
                   <div style={{ marginTop: 8 }}>

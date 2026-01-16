@@ -69,21 +69,15 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   // Load state from database on mount (async)
   useEffect(() => {
-    console.log('[Store] Checking Supabase config...');
-    if (!isSupabaseConfigured()) {
-      console.log('[Store] Supabase not configured, using localStorage only');
-      return;
-    }
+    if (!isSupabaseConfigured()) return;
 
-    console.log('[Store] Loading state from database...');
     loadStateAsync()
       .then((dbState) => {
-        console.log('[Store] Loaded from database:', dbState);
         setState(dbState);
         setIsSynced(true);
       })
       .catch((error) => {
-        console.error('[Store] Failed to load from database:', error);
+        console.error('Failed to load from database:', error);
       })
       .finally(() => {
         setIsLoading(false);

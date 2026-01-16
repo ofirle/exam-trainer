@@ -10,6 +10,17 @@ import {
   EditOutlined,
 } from '@ant-design/icons';
 import type { Question, QuestionProgress } from '../lib/types';
+
+// Helper to get all images from a question (handles legacy single image)
+const getQuestionImages = (question: Question): string[] => {
+  if (question.images && question.images.length > 0) {
+    return question.images;
+  }
+  if (question.image) {
+    return [question.image];
+  }
+  return [];
+};
 import { CONFIG } from '../lib/constants';
 import { isMastered } from '../lib/algorithm';
 import { reverseText } from '../lib/textUtils';
@@ -155,13 +166,20 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
           {reverseText(question.question)}
         </Paragraph>
 
-        {question.image && (
+        {getQuestionImages(question).length > 0 && (
           <div style={{ marginBottom: 24, textAlign: 'center' }}>
-            <Image
-              src={question.image}
-              alt={`Question ${question.id} image`}
-              style={{ maxWidth: '100%', maxHeight: 400 }}
-            />
+            <Image.PreviewGroup>
+              <Space wrap style={{ justifyContent: 'center' }}>
+                {getQuestionImages(question).map((img, idx) => (
+                  <Image
+                    key={idx}
+                    src={img}
+                    alt={`Question ${question.id} image ${idx + 1}`}
+                    style={{ maxWidth: '100%', maxHeight: 400 }}
+                  />
+                ))}
+              </Space>
+            </Image.PreviewGroup>
           </div>
         )}
 

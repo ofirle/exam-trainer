@@ -8,10 +8,23 @@ import {
   Space,
   AutoComplete,
   Select,
+  Image,
 } from 'antd';
-import { PlusOutlined, DeleteOutlined, PictureOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { Question, QuestionOption } from '../lib/types';
 import { reverseText } from '../lib/textUtils';
+import { AVAILABLE_IMAGES } from '../lib/constants';
+
+// Helper to get all images from a question (handles legacy single image)
+const getQuestionImages = (question: Question): string[] => {
+  if (question.images && question.images.length > 0) {
+    return question.images;
+  }
+  if (question.image) {
+    return [question.image];
+  }
+  return [];
+};
 
 const { TextArea } = Input;
 
@@ -44,6 +57,7 @@ const EditForm: React.FC<EditFormProps> = ({
     question.options.map((opt) => ({ ...opt, text: reverseText(opt.text) }))
   );
   const [answer, setAnswer] = useState(question.answer);
+  const [selectedImages, setSelectedImages] = useState<string[]>(getQuestionImages(question));
 
   const handleSave = () => {
     form.validateFields().then((values) => {
@@ -58,7 +72,8 @@ const EditForm: React.FC<EditFormProps> = ({
         tags: values.tags || [],
         options: validOptions,
         answer: answer,
-        image: values.image?.trim() || undefined,
+        images: selectedImages.length > 0 ? selectedImages : undefined,
+        image: undefined, // Clear legacy field when using new images array
       };
       onSave(updatedQuestion);
     });
@@ -96,7 +111,6 @@ const EditForm: React.FC<EditFormProps> = ({
         category: question.category || '',
         subCategory: question.subCategory || '',
         tags: question.tags || [],
-        image: question.image || '',
       }}
     >
       <Form.Item
@@ -131,12 +145,45 @@ const EditForm: React.FC<EditFormProps> = ({
         />
       </Form.Item>
 
-      <Form.Item name="image" label="Image Path">
-        <Input
-          prefix={<PictureOutlined />}
-          placeholder="e.g., /images/question1.png"
-          allowClear
-        />
+      <Form.Item label="Images">
+        <Select
+          mode="multiple"
+          placeholder="Select images"
+          value={selectedImages}
+          onChange={setSelectedImages}
+          style={{ width: '100%' }}
+          optionLabelProp="label"
+        >
+          {AVAILABLE_IMAGES.map((imagePath) => (
+            <Select.Option key={imagePath} value={imagePath} label={imagePath.split('/').pop()}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Image
+                  src={imagePath}
+                  alt={imagePath}
+                  width={40}
+                  height={40}
+                  style={{ objectFit: 'cover' }}
+                  preview={false}
+                />
+                <span>{imagePath.split('/').pop()}</span>
+              </div>
+            </Select.Option>
+          ))}
+        </Select>
+        {selectedImages.length > 0 && (
+          <div style={{ marginTop: 8, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {selectedImages.map((img) => (
+              <Image
+                key={img}
+                src={img}
+                alt={img}
+                width={80}
+                height={80}
+                style={{ objectFit: 'cover', borderRadius: 4 }}
+              />
+            ))}
+          </div>
+        )}
       </Form.Item>
 
       <Form.Item label="Answer Options">

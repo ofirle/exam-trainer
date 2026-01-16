@@ -8,9 +8,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undef
 
 // Check if Supabase is configured
 export const isSupabaseConfigured = (): boolean => {
-  const configured = Boolean(supabaseUrl && supabaseAnonKey);
-  console.log('[Supabase] Configured:', configured, { url: supabaseUrl ? 'set' : 'missing', key: supabaseAnonKey ? 'set' : 'missing' });
-  return configured;
+  return Boolean(supabaseUrl && supabaseAnonKey);
 };
 
 // Create Supabase client (may be null if not configured)
