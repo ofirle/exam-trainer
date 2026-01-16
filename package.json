@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "generate-images": "node scripts/generateImageList.js",
+    "attach-images": "node scripts/attachImages.js",
     "dev": "npm run generate-images && vite",
     "build": "npm run generate-images && tsc -b && vite build",
     "lint": "eslint .",
