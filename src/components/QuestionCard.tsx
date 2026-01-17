@@ -29,8 +29,19 @@ import { reverseText } from '../lib/textUtils';
 import { useStore } from '../lib/store';
 import { EditQuestionModal } from './EditQuestionModal';
 import { isQuestionReviewed } from '../lib/reviewStorage';
+import type { QuestionOption } from '../lib/types';
 
 const { Text, Paragraph } = Typography;
+
+// Fisher-Yates shuffle algorithm
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 interface QuestionCardProps {
   question: Question;
@@ -61,23 +72,25 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   const [isCorrect, setIsCorrect] = useState(false);
   const [isDontKnow, setIsDontKnow] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [shuffledOptions, setShuffledOptions] = useState<QuestionOption[]>([]);
 
-  // Find the correct answer index
-  const correctIndex = question.options.findIndex((opt) => opt.key === question.answer);
+  // Find the correct answer index in the shuffled options
+  const correctIndex = shuffledOptions.findIndex((opt) => opt.key === question.answer);
 
-  // Reset state when question changes
+  // Reset state and shuffle options when question changes
   useEffect(() => {
     setSelectedIndex(null);
     setSubmitted(false);
     setIsCorrect(false);
     setIsDontKnow(false);
-  }, [question.id]);
+    setShuffledOptions(shuffleArray(question.options));
+  }, [question.id, question.options]);
 
   const handleSubmit = () => {
     if (selectedIndex === null) return;
 
     const correct = selectedIndex === correctIndex;
-    const selectedOptionKey = question.options[selectedIndex]?.key || '';
+    const selectedOptionKey = shuffledOptions[selectedIndex]?.key || '';
     const correctOptionKey = question.answer;
     setIsCorrect(correct);
     setSubmitted(true);
@@ -206,11 +219,11 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
         <Radio.Group
           value={selectedIndex}
           onChange={(e) => !submitted && setSelectedIndex(e.target.value)}
-          style={{ width: '100%' }}
+          style={{ width: '100%', direction: 'rtl' }}
           disabled={submitted}
         >
-          <Space direction="vertical" style={{ width: '100%' }}>
-            {question.options.map((option, index) => (
+          <Space direction="vertical" style={{ width: '100%', textAlign: 'right' }}>
+            {shuffledOptions.map((option, index) => (
               <div key={option.key} style={getOptionStyle(index)}>
                 <Radio value={index} style={{ alignItems: 'flex-start', width: '100%' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -223,10 +236,10 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
                         {option.key}. {reverseText(option.text)}
                       </Text>
                       {submitted && index === correctIndex && (
-                        <CheckCircleOutlined style={{ color: '#52c41a', marginLeft: 8 }} />
+                        <CheckCircleOutlined style={{ color: '#52c41a', marginRight: 8 }} />
                       )}
                       {submitted && index === selectedIndex && !isCorrect && (
-                        <CloseCircleOutlined style={{ color: '#ff4d4f', marginLeft: 8 }} />
+                        <CloseCircleOutlined style={{ color: '#ff4d4f', marginRight: 8 }} />
                       )}
                     </div>
                     {option.image && (
